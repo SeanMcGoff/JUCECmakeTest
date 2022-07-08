@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.21)
 
 # Change this to the name of your plugin
 # This cannot have spaces (but PRODUCT_NAME can)
-set(PROJECT_NAME "Pamplejuce")
+set(PROJECT_NAME "JUCE_CMAKE_TEST")
 
 # Set the plugin formats you'll be building here.
 # Valid formats: AAX Unity VST AU AUv3 Standalone
@@ -47,16 +47,16 @@ juce_add_plugin("${PROJECT_NAME}"
     # VERSION ...                               # Set this if the plugin version is different to the project version
     # ICON_BIG ...                              # ICON_* arguments specify a path to an image file to use as an icon for the Standalone
     # ICON_SMALL ...
-    COMPANY_NAME Pamplejuce
-    BUNDLE_ID com.pamplejuce.pamplejuce
-    # IS_SYNTH TRUE/FALSE                       # Is this a synth or an effect?
-    # NEEDS_MIDI_INPUT TRUE/FALSE               # Does the plugin need midi input?
-    # NEEDS_MIDI_OUTPUT TRUE/FALSE              # Does the plugin need midi output?
-    # IS_MIDI_EFFECT TRUE/FALSE                 # Is this plugin a MIDI effect?
-    # EDITOR_WANTS_KEYBOARD_FOCUS TRUE/FALSE    # Does the editor need keyboard focus?
-    COPY_PLUGIN_AFTER_BUILD TRUE # On MacOS, plugin will be copied to /Users/you/Library/Audio/Plug-Ins/
-    PLUGIN_MANUFACTURER_CODE Pamp               # This has to be one uppercase, rest lower for AU formats
-    PLUGIN_CODE P001                            # A unique four-character plugin id with at least one upper-case character
+    COMPANY_NAME Sean McGoff
+    BUNDLE_ID com.seanmcgoff.JUCE_CMAKE_TEST
+    IS_SYNTH FALSE                              # Is this a synth or an effect?
+    NEEDS_MIDI_INPUT FALSE                      # Does the plugin need midi input?
+    NEEDS_MIDI_OUTPUT FALSE                     # Does the plugin need midi output?
+    IS_MIDI_EFFECT FALSE                        # Is this plugin a MIDI effect?
+    EDITOR_WANTS_KEYBOARD_FOCUS FALSE           # Does the editor need keyboard focus?
+    COPY_PLUGIN_AFTER_BUILD TRUE                # On MacOS, plugin will be copied to /Users/you/Library/Audio/Plug-Ins/
+    PLUGIN_MANUFACTURER_CODE Sean               # This has to be one uppercase, rest lower for AU formats
+    PLUGIN_CODE SM00                            # A unique four-character plugin id with at least one upper-case character
     FORMATS "${FORMATS}"
     PRODUCT_NAME "${PROJECT_NAME}")        # The name of the final executable, which can differ from the target name
 
@@ -77,12 +77,6 @@ set_target_properties("${PROJECT_NAME}" PROPERTIES FOLDER "")
 # The Xcode source tree should uhhh, still look like the source tree, yo
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Source PREFIX "" FILES ${SourceFiles})
 
-# Setup our binary data as a target
-juce_add_binary_data(Assets SOURCES pamplejuce.png)
-
-# Required for Linux happiness:
-# See https://forum.juce.com/t/loading-pytorch-model-using-binarydata/39997/2
-set_target_properties(Assets PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
 
 # This cleans up the folder organization on Xcode.
 # It tucks the Plugin varieties into a "Targets" folder and generate an Xcode Scheme manually
@@ -104,7 +98,6 @@ foreach(target ${FORMATS} "All")
             XCODE_GENERATE_SCHEME ON)
     endif()
 endforeach()
-set_target_properties(Assets PROPERTIES FOLDER "Targets")
 
 # We'll need to link to these from our plugin as well as our tests
 set(JUCE_DEPENDENCIES
@@ -119,7 +112,6 @@ target_compile_definitions("${PROJECT_NAME}"
 
 target_link_libraries("${PROJECT_NAME}"
     PRIVATE
-    Assets
     ${JUCE_DEPENDENCIES}
     PUBLIC
     juce::juce_recommended_config_flags
@@ -173,3 +165,13 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
    add_compile_options (-fcolor-diagnostics)
 endif ()
+
+# CPack takes these paths as the locations where the plugins should be installed in the end
+install (TARGETS "${PROJECT_NAME}_VST3" LIBRARY DESTINATION /Library/Audio/Plug-Ins/VST3        COMPONENT VST3)
+install (TARGETS "${PROJECT_NAME}_AU"   LIBRARY DESTINATION /Library/Audio/Plug-Ins/Components COMPONENT AU)
+
+# This makes sure that only the two components and nothing else is part of our installer
+SET (CPACK_COMPONENTS_ALL VST3 AU)
+
+# We want to use the native Apple GUI installer
+SET (CPACK_GENERATOR productbuild)

@@ -21,7 +21,7 @@ AudioPluginAudioProcessor::~AudioPluginAudioProcessor()
 //==============================================================================
 const juce::String AudioPluginAudioProcessor::getName() const
 {
-    return JucePlugin_Name;
+    return "JUCE_CMAKE_TEST";
 }
 
 bool AudioPluginAudioProcessor::acceptsMidi() const
@@ -147,7 +147,6 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     {
         auto* channelData = buffer.getWritePointer (channel);
         juce::ignoreUnused (channelData);
-        // ..do something to the data...
     }
 }
 

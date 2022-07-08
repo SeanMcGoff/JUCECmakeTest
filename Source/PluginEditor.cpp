@@ -5,6 +5,16 @@
 AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAudioProcessor& p)
     : AudioProcessorEditor (&p), processorRef (p)
 {
+    specInverseButton.setButtonText("Spectral Inverse");
+    specInverseButton.setClickingTogglesState(true);
+
+    specReverseButton.setButtonText("Spectral Reverse");
+    specReverseButton.setClickingTogglesState(true);
+
+
+    addAndMakeVisible(specInverseButton);
+    addAndMakeVisible(specReverseButton);
+
     juce::ignoreUnused (processorRef);
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
@@ -18,12 +28,8 @@ AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor()
 //==============================================================================
 void AudioPluginAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
-
-    g.setColour (juce::Colours::white);
-    g.setFont (15.0f);
-    g.drawFittedText ("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
+    specInverseButton.setBoundsRelative({0.2f, 0.5f, 0.3f, 0.2f});
+    specReverseButton.setBoundsRelative({0.8f, 0.5f, 0.3f, 0.2f});
 }
 
 void AudioPluginAudioProcessorEditor::resized()

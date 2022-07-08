@@ -13,6 +13,9 @@ public:
     void paint (juce::Graphics&) override;
     void resized() override;
 
+    juce::ToggleButton specInverseButton;
+    juce::ToggleButton specReverseButton;
+
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
